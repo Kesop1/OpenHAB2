@@ -1,0 +1,156 @@
+
+import org.openhab.core.library.types.*
+import org.openhab.core.persistence.*
+import org.openhab.model.script.actions.*
+import org.openhab.library.tel.types.CallType
+import org.openhab.core.transform.actions.Transformation
+import org.joda.time.*
+import java.lang.Double
+import java.lang.Math.*
+import java.util.Date
+import org.openhab.core.library.types.DecimalType
+import org.openhab.action.squeezebox.*
+import java.util.concurrent.locks.ReentrantLock
+
+
+var Timer timer_amp1 = null
+var Timer timer_amp2 = null
+
+var Timer timer_scn1 = null
+var Timer timer_scn2 = null
+var Timer timer_scn3 = null
+
+//**********************************************************************************//
+rule "Sceny"
+when
+Item scena received update
+then
+sendCommand(logger, "Scena: ustaw - " + scena.state)
+//scena 1=pawsinoga, wszystko OFF
+if(scena.state==1){
+	logInfo("Scena","Ustawiono scene nr 1 - pawsinoga")
+	sendCommand(lis_lcd, OFF)
+	sendCommand(lis_speak, OFF)
+	sendCommand(amp, OFF)
+	sendCommand(but_pc, OFF)
+	//sendCommand(led, OFF)
+}
+
+//scena 2=meloman, wszystko OFF poza AMP i subwooferem
+if(scena.state==2){
+	logInfo("Scena","Ustawiono scene nr 2 - meloman")
+	sendCommand(lis_lcd, OFF)
+	sendCommand(lis_speak, OFF)
+	sendCommand(amp, ON)
+	timer_scn1 = createTimer(now.plusSeconds(5))[|
+		   sendCommand(pilot_amp, "SCENE4")
+		   ]
+}
+
+//scena 3=pececiarz, wlacz monitor i glosniki PC
+if(scena.state==3){
+	logInfo("Scena","Ustawiono scene nr 3 - pececiarz")
+	sendCommand(lis_lcd, ON)
+	sendCommand(lis_speak, ON)
+}
+
+//scena 4=mecz,
+if(scena.state==4){
+	logInfo("Scena","Ustawiono scene nr 4 - mecz")
+	sendCommand(amp, ON)
+	sendCommand(lis_lcd, OFF)
+	sendCommand(lis_speak, OFF)
+	sendCommand(pilot_amp, "TV")
+	timer_scn2 = createTimer(now.plusSeconds(2))[|
+		   sendCommand(pilot_amp, "SCENE2")
+		   			  sendCommand(audio_src, ON)
+					  ]
+					  //sendCommand(led, ON)
+}
+
+//scena 5=film,
+if(scena.state==5){
+	logInfo("Scena","Ustawiono scene nr 5 - film")
+	sendCommand(amp, ON)
+	sendCommand(lis_lcd, OFF)
+	sendCommand(lis_speak, OFF)
+	sendCommand(pilot_amp, "TV")
+	timer_scn2 = createTimer(now.plusSeconds(2))[|
+		   sendCommand(pilot_amp, "SCENE2")
+		   			  sendCommand(audio_src, ON)
+					  ]
+					  //sendCommand(led, ON)
+}
+
+//scena 6=ksiazka,
+if(scena.state==6){
+	logInfo("Scena","Ustawiono scene nr 6 - ksiazka")
+	sendCommand(amp, ON)
+	sendCommand(lis_lcd, OFF)
+	sendCommand(lis_speak, OFF)
+	//sendCommand(led, ON)
+}
+
+//scena 7=TV,
+if(scena.state==7){
+	logInfo("Scena","Ustawiono scene nr 7 - TV")
+	sendCommand(amp, ON)
+	sendCommand(lis_lcd, OFF)
+	sendCommand(lis_speak, OFF)
+	sendCommand(pilot_amp, "TV")
+	timer_scn3 = createTimer(now.plusSeconds(2))[|
+		   sendCommand(pilot_amp, "SCENE3")
+		   ]
+		   //sendCommand(led, ON)
+}
+
+end
+
+//*******************************************************************//
+rule "Amp"
+when
+Item amp received update
+then
+if(amp.state==OFF){
+	sendCommand(pilot_amp,"OFF")
+	timer_amp1 = createTimer(now.plusSeconds(1))[|
+		   sendCommand(lis_amp, OFF)
+		   			sendCommand(lis_sub, OFF)
+					]
+}
+else{
+	sendCommand(lis_amp, ON)
+	sendCommand(lis_sub, ON)
+	timer_amp2 = createTimer(now.plusSeconds(3))[|
+		   sendCommand(pilot_amp, "ON")
+		   ]
+}
+end
+
+
+//**********************************************************//
+rule "PC audio na AMP"
+when
+Item audio_src received command ON
+then
+sendCommand(logger, "Audio: ustaw - AMP")
+sendCommand(audiosrc, 2)
+var i = 1
+while ((i=i+1) < 5) {
+      timer_scn3 = createTimer(now.plusSeconds(1))[|
+      		 sendCommand(pilot_amp, "AUDIOSRC")
+		 ]
+}
+end
+
+//**********************************************************//
+rule "Zmien audio SRC"
+when
+Item audiosrc received update
+then
+var String src
+if(audiosrc.state==1) src="PCPC"
+else if(audiosrc.state==2) src="PCAMP"
+sendCommand(logger, "Audio: ustaw - " + src)
+sendCommand(send_audio, src)
+end

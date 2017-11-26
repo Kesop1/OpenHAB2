@@ -1,0 +1,144 @@
+//
+Number              wlgodz              "Godziny [%d]"                                    <clock>             (budzik, )          
+
+//
+Number              wlmin               "Minuty [%d]"                                     <clock>             ()                  
+
+//
+Switch              budzik1             "Ustaw pobudke"                                   <bedroom>           ()                  
+
+//
+Number              radio_budzik        ""                                                <scena>             ()                  
+
+//
+String              wlczas              "%s"                                              <>                  ()                  
+
+//
+Switch              pcON                "Wlaczyc PC?"                                     <>                  ()                  
+
+//
+Number              wlgodz_praca        "Godziny [%d]"                                    <clock>             (budzik_praca, )    
+
+//
+Number              wlmin_praca         "Minuty [%d]"                                     <clock>             (budzik_praca, )    
+
+//
+Switch              budzik1_praca       "Ustaw pobudke"                                   <bedroom>           (budzik_praca, )    
+
+//
+String              wlczas_praca        "%s"                                              <>                  ()                  
+
+//
+Switch              wolne               "Jutro wolne"                                     <>                  ()                  
+
+//
+Number              radio_praca         ""                                                <scena>             (budzik_praca, )    
+
+//
+Switch              pcON_praca          "Wlaczyc PC?"                                     <>                  ()                  
+
+//
+Switch              lis_lcd             "Monitor"                                         <monitor>           (All, )             {mqtt=">[broker:lis/lcd:command:off:OFF],>[broker:lis/lcd:command:on:ON],<[broker:lis/lcd/status:state:default]"}
+
+//
+Switch              lis_speak           "Glosniki"                                        <speakers>          (All, )             {mqtt=">[broker:lis/speak:command:off:OFF],>[broker:lis/speak:command:on:ON],<[broker:lis/speak/status:state:default]"}
+
+//
+Switch              lis_amp             "Amplituner"                                      <speakers>          (All, )             {mqtt=">[broker:lis/amp:command:off:OFF],>[broker:lis/amp:command:on:ON],<[broker:lis/amp/status:state:default]"}
+
+//
+Switch              lis_sub             "Subwoofer"                                       <speakers>          (All, )             {mqtt=">[broker:lis/sub:command:off:OFF],>[broker:lis/sub:command:on:ON],<[broker:lis/sub/status:state:default]"}
+
+//
+Switch              lis_etc             "Listwa 5"                                        <switch>            (All, )             {mqtt=">[broker:lis/etc:command:off:OFF],>[broker:lis/etc:command:on:ON],<[broker:lis/etc/status:state:default]"}
+
+//
+Switch              but_pc              "Komputer"                                        <pc>                (All, )             {mqtt=">[broker:pcCMD:command:off:PCOFF],>[broker:pcCMD:command:on:PCON],<[broker:pcCMD/status:state:default]"}
+
+//
+Switch              but_tv              "TV"                                              <tv>                (All, )             {mqtt=">[broker:pilot/amp:command:off:TV],>[broker:pilot/amp:command:on:TV],<[broker:lis/tv/status:state:default]"}
+
+//
+Dimmer              DiscoMode           ""                                                <>                  ()                  {milight="iBox:5:discoMode"}
+
+//
+Dimmer              DiscoSpeed          ""                                                <>                  ()                  {milight="iBox:5:discoSpeed"}
+
+//
+Switch              Light_Groundfloor   ""                                                <>                  ()                  {milight="iBox
+
+//
+Color               Light_Party         ""                                                <>                  ()                  {milight="iBox
+
+//
+Switch              lampka              ""                                                <>                  ()                  {milight="iBox:0"}
+
+//
+Number              czuj_temp           "Temperatura [%s Â°C]"                            <temperature>       (All, )             {mqtt="<[broker:czuj/temp:state:default]"}
+
+//
+Number              czuj_wilg           "Wilgotnosc [%s %%]"                              <water>             (All, )             {mqtt="<[broker:czuj/wilg:state:default]"}
+
+//
+Switch              czuj                ""                                                <>                  ()                  {mqtt=">[broker:czuj:command:*:default]"}
+
+//
+DateTime            dataczas            "Data [%1$tT %1$tA, %1$td.%1$tm.%1$tY]"           <calendar>          (All, )             
+
+//
+Switch              wschod              "Wschod Slonca"                                   <sun>               (All, )             {mqtt=">[broker:pcCMD:command:*:default]"}
+
+//
+Number              scena               ""                                                <scena>             (All, )             {mqtt=">[broker:pilot/amp:command:*:default]"}
+
+//
+Number              radio_stacja        ""                                                <scena>             (All, )             {mqtt=">[broker:logger:command:*:default]"}
+
+//
+Switch              amp                 ""                                                <>                  (buttons, )         
+
+//
+Number              audiosrc            ""                                                <>                  ()                  
+
+//
+Switch              audio_src           ""                                                <>                  ()                  
+
+//
+String              send_audio          ""                                                <>                  ()                  
+
+//
+String              change_radio        ""                                                <>                  ()                  
+
+//
+String              logger              ""                                                <>                  ()                  
+
+//
+Number              volume              ""                                                <>                  ()                  
+
+//
+String              vol_send            ""                                                <>                  ()                  {mqtt=">[broker:volume:command:*:default]"}
+
+//
+String              pilot_amp           ""                                                <>                  ()                  {mqtt=">[broker:pilot/amp:command:*:default]"}
+
+//
+Number              pilot_rcv           ""                                                <>                  ()                  {mqtt="<[broker:pilot/rcv:state:default]"}
+
+//
+Number              wylgodz             "Godziny [%d]"                                    <clock>             (wylacznik, )       
+
+//
+Number              wylmin              "Minuty [%d]"                                     <clock>             (wylacznik, )       
+
+//
+String              wylczas             "%s"                                              <>                  ()                  
+
+//
+Switch              ustawspanie         "Ustaw timer"                                     <bedroom>           (wylacznik, )       
+
+//
+Switch              spij_pc             "PC"                                              <pc>                (wylacznik, )       
+
+//
+Switch              spij_tv             "TV"                                              <tv>                (wylacznik, )       
+

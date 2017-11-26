@@ -1,0 +1,190 @@
+import org.openhab.core.library.types.*
+import org.openhab.core.persistence.*
+import org.openhab.model.script.actions.*
+import org.openhab.library.tel.types.CallType
+import org.openhab.core.transform.actions.Transformation
+import org.joda.time.*
+import java.lang.Double
+import java.lang.Math.*
+import java.util.Date
+import org.openhab.core.library.types.DecimalType
+import org.openhab.action.squeezebox.*
+import java.util.concurrent.locks.ReentrantLock
+
+var DateTime alarmTime = new DateTime(now)
+var Boolean czujnik = true
+
+var Timer timer_wyl1 = null
+
+var Timer timer_alr1 = null
+var Timer timer_alr2 = null
+var Timer timer_alr3 = null
+
+var Timer timer_arb1 = null
+var Timer timer_arb2 = null
+var Timer timer_arb3 = null
+var Timer timer_arb4 = null
+
+
+//**************************************************************************************//
+rule "Pokaz date, czas, alarmTime i czujniki"
+when
+Time cron "0/10 * * * * ?"
+then
+sendCommand(logger, "Pokaz date i temperature")
+postUpdate(dataczas, new DateTimeType())
+
+//daj update czasu do wylacznika
+if(alarmTime.getMinuteOfDay-now.getMinuteOfDay>=0){
+        if(wylczas.state!="-"){
+        postUpdate(wylczas, alarmTime.getMinuteOfDay-now.getMinuteOfDay)
+        }
+}
+czujnik = !czujnik
+if(czujnik)
+        sendCommand(czuj, ON)
+else
+        sendCommand(czuj, OFF)
+end
+
+
+
+//**************************************************************************************//
+rule "wylaczanie"
+when
+Item ustawspanie received command ON
+then
+var int czaswyl
+czaswyl = (wylgodz.state as DecimalType).intValue * 60 + (wylmin.state as DecimalType).intValue
+czaswyl = czaswyl.intValue
+alarmTime = new DateTime(now.plusMinutes(czaswyl))
+
+//jesli timer juz istnieje to go nadpisz
+if (timer_wyl1 != null) {
+        timer_wyl1.cancel
+        timer_wyl1 = null
+}
+
+//wartosc inicjalna dla update'u
+postUpdate(wylczas, czaswyl)
+
+sendCommand(logger, "Wylaczanie: ustaw - " + czaswyl)
+logInfo("Wylaczanie","Wylaczanie ustawione na za " + czaswyl + " minut")
+
+timer_wyl1 = createTimer(now.plusMinutes(czaswyl))[|
+	   sendCommand(logger, "Wylaczanie: teraz")
+	   logInfo("Wylaczanie","    Wylaczanie teraz!!!!!")
+	   //wyslij komende OFF dla nadajnika IR
+	   sendCommand(scena, 1)
+
+	   if (spij_tv.state==ON){
+           sendCommand(but_tv, OFF)
+	   }
+
+	   sendCommand(ustawspanie, OFF)
+]
+end
+
+//**************************************************************************************//
+rule "zeruj wylaczanie"
+when
+Item ustawspanie received command OFF
+then
+sendCommand(logger, "Wylaczanie: anuluj")
+if (timer_wyl1 != null) {
+        timer_wyl1.cancel
+        timer_wyl1 = null
+}
+postUpdate(wylczas, "-")
+end
+
+
+//================================= budzik =============================================//
+
+//**************************************************************************************//
+rule "budzik"
+when
+Item budzik1 received command ON
+then
+var int czaswl
+czaswl = (wlgodz.state as DecimalType).intValue * 60 + (wlmin.state as DecimalType).intValue
+czaswl = czaswl.intValue
+
+//okresl ile minut jest juz tego dnia
+var int terazczas
+terazczas = now.getMinuteOfDay
+terazczas = terazczas.intValue
+
+var int alarm
+alarm = czaswl - terazczas
+
+//jesli ustawiono na dzien nastepny
+if (alarm <0){
+   alarm = alarm + 1440
+}
+
+//jesli timer juz isnieje to nadpisz
+if (timer_alr1 != null) {
+   timer_alr1.cancel
+   timer_alr1 = null
+}
+
+//update godziny na stronce
+var String alarm_godz = wlgodz.state.format("%d")
+var String alarm_min = wlmin.state.format("%d")
+if (wlmin.state < 10){
+   alarm_min="0" + alarm_min
+}
+if (wlgodz.state<10){
+   alarm_godz = "0" + alarm_godz
+}
+
+var String alarm_czas = alarm_godz + ":" + alarm_min
+postUpdate(wlczas, alarm_czas)
+sendCommand(logger, "Budzik: ustaw - " + alarm_czas)
+logInfo("Budzik","Pobudka ustawiona na " + alarm_czas)
+
+//timer
+timer_alr1 = createTimer(now.plusMinutes(alarm))[|
+	   sendCommand(logger, "Budzik: pobudka")
+	   logInfo("Budzik","Pobudka")
+	   postUpdate(scena, 2)
+
+	if (timer_alr2 != null) {
+	      timer_alr2.cancel
+	      timer_alr2 = null
+	}
+
+	if(pcON.state==ON){
+		sendCommand(but_pc, ON)
+	}
+
+	//wlacz wybrana stacje radiowa
+	timer_alr2 = createTimer(now.plusSeconds(8))[|
+		   sendCommand(radio_stacja, radio_budzik.state)
+	]
+
+	if (timer_alr3 != null) {
+	   timer_alr3.cancel
+	   timer_alr3 = null
+	}
+
+
+	//wlacz lampke gdy jest ciemno i zglosnij radio
+	timer_alr3 = createTimer(now.plusSeconds(60))[|
+		if(wschod.state==OFF){
+			//wlacz lampke////////////////////////////////////////////sendCommand(LED, OFF)
+		}
+		sendCommand(volume, 5)
+	]
+
+	//daj update wartosci wylacznika
+     	postUpdate(wylgodz, 1)
+     	postUpdate(wylmin, 0)
+     	postUpdate(wlgodz, 8)
+     	postUpdate(wlmin, 20)
+     	postUpdate(wlczas,"-")
+						
+]
+end
+

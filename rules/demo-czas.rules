@@ -1,0 +1,100 @@
+//import org.openhab.core.library.types.*
+//import org.openhab.core.persistence.*
+//import org.openhab.model.script.actions.*
+//import org.openhab.library.tel.types.CallType
+//import org.openhab.core.transform.actions.Transformation
+//import org.joda.time.*
+//import java.lang.Double
+//import java.lang.Math.*
+//import java.util.Date
+//import org.openhab.core.library.types.DecimalType
+//import org.openhab.action.squeezebox.*
+//import java.util.concurrent.locks.ReentrantLock
+
+var DateTime alarmTime = new DateTime(now)
+var Boolean czujnik = true
+
+var Timer timer_wyl1 = null
+
+var Timer timer_alr1 = null
+var Timer timer_alr2 = null
+var Timer timer_alr3 = null
+
+var Timer timer_arb1 = null
+var Timer timer_arb2 = null
+var Timer timer_arb3 = null
+var Timer timer_arb4 = null
+
+
+//**************************************************************************************//
+rule "Pokaz date, czas, alarmTime i czujniki"
+when
+Time cron "0/10 * * * * ?"
+then
+sendCommand(logger, "Pokaz date i temperature")
+postUpdate(dataczas, new DateTimeType())
+
+//daj update czasu do wylacznika
+if(alarmTime.getMinuteOfDay-now.getMinuteOfDay>=0){
+        if(wylczas.state!="-"){
+        postUpdate(wylczas, alarmTime.getMinuteOfDay-now.getMinuteOfDay)
+        }
+}
+czujnik = !czujnik
+if(czujnik)
+        sendCommand(czuj, ON)
+else
+        sendCommand(czuj, OFF)
+end
+
+
+
+//**************************************************************************************//
+rule "wylaczanie"
+when
+Item ustawspanie received command ON
+then
+var int czaswyl
+czaswyl = (wylgodz.state as DecimalType).intValue * 60 + (wylmin.state as DecimalType).intValue
+czaswyl = czaswyl.intValue
+alarmTime = new DateTime(now.plusMinutes(czaswyl))
+
+//jesli timer juz istnieje to go nadpisz
+if (timer_wyl1 != null) {
+        timer_wyl1.cancel
+        timer_wyl1 = null
+}
+
+//wartosc inicjalna dla update'u
+postUpdate(wylczas, czaswyl)
+
+sendCommand(logger, "Wylaczanie: ustaw - " + czaswyl)
+logInfo("Wylaczanie","Wylaczanie ustawione na za " + czaswyl + " minut")
+
+timer_wyl1 = createTimer(now.plusMinutes(czaswyl))[|
+	   sendCommand(logger, "Wylaczanie: teraz")
+	   logInfo("Wylaczanie","    Wylaczanie teraz!!!!!")
+	   //wyslij komende OFF dla nadajnika IR
+	   sendCommand(scena, 1)
+
+	   if (spij_tv.state==ON){
+           sendCommand(but_tv, OFF)
+	   }
+
+	   sendCommand(ustawspanie, OFF)
+]
+end
+
+//**************************************************************************************//
+rule "zeruj wylaczanie"
+when
+Item ustawspanie received command OFF
+then
+sendCommand(logger, "Wylaczanie: anuluj")
+if (timer_wyl1 != null) {
+        timer_wyl1.cancel
+        timer_wyl1 = null
+}
+postUpdate(wylczas, "-")
+end
+

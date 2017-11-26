@@ -1,0 +1,97 @@
+import org.openhab.core.library.types.*
+import org.openhab.core.persistence.*
+import org.openhab.model.script.actions.*
+import org.openhab.library.tel.types.CallType
+import org.openhab.core.transform.actions.Transformation
+import org.joda.time.*
+import java.lang.Double
+import java.lang.Math.*
+import java.util.Date
+import org.openhab.core.library.types.DecimalType
+import org.openhab.action.squeezebox.*
+import java.util.concurrent.locks.ReentrantLock
+
+//*******************************************************************//
+rule "Pilot"
+when
+Item pilot_rcv received update
+then
+if(pilot_rcv.state==1){ //pawsinoga
+logInfo("Pilot","Pilot 1")
+postUpdate(scena, 1)
+}
+else if(pilot_rcv.state==2){//meloman
+logInfo("Pilot","Pilot 2")
+postUpdate(scena, 2)
+}
+else if(pilot_rcv.state==3){//pececiarz
+logInfo("Pilot","Pilot 3")
+postUpdate(scena, 3)
+}
+else if(pilot_rcv.state==4){//mecz
+logInfo("Pilot","Pilot 4")
+postUpdate(scena, 4)
+}
+else if(pilot_rcv.state==5){//film
+logInfo("Pilot","Pilot 5")
+postUpdate(scena, 5)
+}
+else if(pilot_rcv.state==6){//ksiazka
+logInfo("Pilot","Pilot 6")
+postUpdate(scena, 6)
+}
+else if(pilot_rcv.state==7){//tv
+logInfo("Pilot","Pilot 7")
+postUpdate(scena, 7)
+}
+else if(pilot_rcv.state==8){
+logInfo("Pilot","Pilot 8")
+}
+else if(pilot_rcv.state==9){
+logInfo("Pilot","Pilot 9")
+}
+else if(pilot_rcv.state==0){
+logInfo("Pilot","Pilot 0")
+     postUpdate(wylgodz, 1)
+     postUpdate(wylmin, 0)
+     sendCommand(ustawspanie, ON)
+}
+//czyli SCENE4 wcisniete na pilocie, jesli jest wylaczony AMP, to wlaczy listwe i subwoofer
+else if(pilot_rcv.state==10){
+logInfo("Pilot","Pilot 10")
+sendCommand(amp, ON)
+timer_amp2 = createTimer(now.plusSeconds(3))[|
+sendCommand(pilot_amp, "SCENE4")
+]
+
+} 
+
+end
+
+
+//*******************************************************************//
+rule "Radio stacja"
+when
+Item radio_stacja received update
+then
+logInfo("Radio stacja","Ustaw stacje nr " + radio_stacja.state)
+sendCommand(logger, "Radio stacja: ustaw - " + radio_stacja.state)
+sendCommand(change_radio, "RADIO" + radio_stacja.state)
+end
+
+
+//*******************************************************************//
+rule "Volume"
+when
+Item volume received update
+then
+var String vol
+if(volume.state==1) vol="+5"
+else if(volume.state==2) vol="+10"
+else if(volume.state==3) vol="-5"
+else if(volume.state==4) vol="-10"
+logInfo("Volume","Zmien volume o " + vol)
+sendCommand(logger, "Volume: ustaw " + vol)
+sendCommand(vol_send, vol)
+end
+

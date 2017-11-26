@@ -1,0 +1,108 @@
+sitemap demo label="Chata" {
+
+//////////////////////////////////////////////////
+Frame{
+Switch item=lis_lcd
+Switch item=lis_speak
+Switch item=lis_amp
+Switch item=lis_sub
+Switch item=lis_etc
+Switch item=but_pc
+Switch item=but_tv
+}
+
+//////////////////////////////////////////////////
+Frame label="Kontrola glosnosci"{
+Switch item=volume label="Volume"
+}
+
+//////////////////////////////////////////////////
+Frame label="Logger" {
+Text item=dataczas
+Text item=czuj_temp
+Text item=czuj_wilg
+Switch item=wschod
+}
+
+//////////////////////////////////////////////////
+Frame label="Wylacznik czasowy"{
+Text label="Wylacznik [%s]" item=wylczas icon="moon"{
+Frame label="Kiedy?" {
+Setpoint item=wylgodz minValue=0 maxValue=23 step=1
+Setpoint item=wylmin minValue=0 maxValue=55 step=5
+Switch item=ustawspanie
+}
+Frame label="Co wylaczyc?"{
+Switch item=spij_pc
+Switch item=spij_tv
+}
+}
+}
+
+////////////////////////////////////////////////
+
+Frame label="Arbeit"{
+Text label="Praca [%s]" item= wlczas_praca icon="sun"{
+Frame label="Na ktora?" {
+Setpoint item=wlgodz_praca minValue=0 maxValue=23 step=1
+Setpoint item=wlmin_praca minValue=0 maxValue=50 step=10
+
+Switch item=budzik1_praca
+Switch item=wolne
+Switch item=pcON_praca
+Selection item=radio_praca label="Stacja" mappings=[1="Trojka", 2="Dwojka", 3="ESKA Rock", 4="ZET Gold", 5="RMF Classic", 6="Antyradio", 7="Stacja 7", 8="Stacja 8"]
+}
+}
+}
+
+///////////////////////////////////////////////
+
+Frame label="Budzik"{
+Text label="Budzik [%s]" item=wlczas icon="sun"{
+Frame label="Na ktora?" {
+Setpoint item=wlgodz minValue=0 maxValue=23 step=1
+Setpoint item=wlmin minValue=0 maxValue=50 step=10
+Switch item=budzik1
+Switch item=pcON
+Selection item=radio_budzik label="Stacja" mappings=[1="Trojka", 2="Dwojka", 3="ESKA Rock", 4="ZET Gold", 5="RMF Classic", 6="Antyradio", 7="Stacja 7", 8="Stacja 8"]
+}
+}
+}
+
+/////////////////////////////////////////////
+
+Frame label="Scena"{
+Selection item=scena label="Co robi?" mappings=[1="pawsinoga", 2="meloman", 3="pececiarz", 4="Mecz", 5="Film", 6="Ksiazka", 7="TV"]
+}
+
+
+/////////////////////////////////////////////
+
+Frame label="Stacja radio"{
+Selection item=radio_stacja label="Stacja" mappings=[1="Trojka", 2="Dwojka", 3="ESKA Rock", 4="ZET Gold", 5="RMF Classic", 6="Antyradio", 7="Stacja 7", 8="Stacja 8"]
+}
+
+/////////////////////////////////////////////
+
+Frame label="Other"{
+//Selection item=button label="Button" mappings=["UP"="up", "DN"="down", "LE"="left", "RI"="right", "1"="1", "2"="2", "3"="3", "4"="4", "R1"="r1", "R2"="r2", "L1"="l1", "L2"="l2"]
+Selection item=audiosrc label="Audio Source" mappings=[1="PC", 2="AMP"]
+}
+
+
+
+
+
+    Frame label="Date" {
+        Text item=Date
+    }
+   Frame label="Demo" {
+   Switch item=Lights icon="light"
+        Text item=LR_Temperature label="Livingroom [%.1f °C]"
+        Group item=Heating
+        Text item=LR_Multimedia_Summary label="Multimedia [%s]" icon="video" {
+            Selection item=LR_TV_Channel mappings=[0="off", 1="DasErste", 2="BBC One", 3="Cartoon Network"]
+            Slider item=LR_TV_Volume
+        }
+    }
+}
