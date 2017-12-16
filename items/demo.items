@@ -107,3 +107,16 @@ String              pilot_amp                                                   
 
 //
 Number              pilot_rcv                                                                                               {mqtt="<[broker:pilot/rcv:state:default]"}
+
+Dimmer Light_LivingroomB    {channel="milight:whiteLed:F0FE6B1E312C:1:ledbrightness"} 
+
+Number              audiosrc
+
+Switch              audio_src
+
+String			send_audio											{mqtt=">[broker:pcCMD:command:*:default]"}
+
+String															change_radio           {mqtt=">[broker:pilot/amp:command:*:default]"}
+
+//logger
+String		logger												{mqtt=">[broker:logger:command:*:default]"}

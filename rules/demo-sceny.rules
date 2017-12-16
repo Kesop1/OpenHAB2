@@ -63,8 +63,8 @@ if(scena.state==4){
 	sendCommand(pilot_amp, "TV")
 	timer_scn2 = createTimer(now.plusSeconds(2))[|
 		   sendCommand(pilot_amp, "SCENE2")
-		   			  sendCommand(audio_src, ON)
-					  ]
+		   sendCommand(audio_src, ON)
+		  ]
 					  //sendCommand(led, ON)
 }
 
@@ -77,8 +77,8 @@ if(scena.state==5){
 	sendCommand(pilot_amp, "TV")
 	timer_scn2 = createTimer(now.plusSeconds(2))[|
 		   sendCommand(pilot_amp, "SCENE2")
-		   			  sendCommand(audio_src, ON)
-					  ]
+		  sendCommand(audio_src, ON)
+		  ]
 					  //sendCommand(led, ON)
 }
 
