@@ -1,0 +1,4 @@
+{
+    "openhab.host": "openhabianpi",
+    "openhab.useRestApi": false
+}
