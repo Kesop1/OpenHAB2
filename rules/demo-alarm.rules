@@ -1,0 +1,101 @@
+var Timer timer_alr1 = null
+var Timer timer_alr2 = null
+var Timer timer_alr3 = null
+
+//**************************************************************************************//
+rule "budzik"
+when
+Item alarm_set received command ON
+then
+
+var int czaswl
+czaswl = (alarm_hrs.state as DecimalType).intValue * 60 + (alarm_mins.state as DecimalType).intValue
+czaswl = czaswl.intValue
+
+//okresl ile minut jest juz tego dnia
+var int terazczas
+terazczas = now.getMinuteOfDay
+terazczas = terazczas.intValue
+
+var int alarm
+alarm = czaswl - terazczas
+
+//jesli ustawiono na dzien nastepny
+if (alarm <0){
+   alarm = alarm + 1440
+}
+
+
+//jesli timer juz isnieje to nadpisz
+if (timer_alr1 != null) {
+   timer_alr1.cancel
+   timer_alr1 = null
+}
+
+//update godziny na stronce
+var String alarm_godz = alarm_hrs.state.format("%02d")
+var String alarm_min = alarm_mins.state.format("%02d")
+
+var String alarm_czas = alarm_godz + ":" + alarm_min
+postUpdate(alarm_time, alarm_czas)
+sendCommand(logger, "Budzik: ustaw - " + alarm_czas)
+logInfo("Budzik","Pobudka ustawiona na " + alarm_czas)
+
+//timer
+timer_alr1 = createTimer(now.plusMinutes(alarm))[|
+           sendCommand(logger, "Budzik: pobudka")
+           logInfo("Budzik","Pobudka")
+           postUpdate(scena, 2)
+
+           if(alarm_PC_ON.state==ON){
+			logInfo("Budzik","Wlacz PC")
+//	              sendCommand(but_pc, ON)
+                      }
+
+           if (timer_alr2 != null) {
+	              timer_alr2.cancel
+           	      timer_alr2 = null
+                      }
+
+           //wlacz wybrana stacje radiowa
+           timer_alr2 = createTimer(now.plusSeconds(8))[|
+	   	      logInfo("Budzik","Ustaw radio stacje: " + alarm_radio.state.toString)
+	              sendCommand(change_radio, alarm_radio.state.toString)
+                      ]
+
+           if (timer_alr3 != null) {
+	              timer_alr3.cancel
+           	      timer_alr3 = null
+                      }
+
+           //wlacz lampke gdy jest ciemno i zglosnij radio
+           timer_alr3 = createTimer(now.plusSeconds(60))[|
+	              if(wschod.state==OFF){
+           	                 //wlacz lampke///////////sendCommand(LED, OFF)
+                      		 }
+		      sendCommand(vol_send, "5")
+                      ]
+
+           //daj update wartosci wylacznika
+	   postUpdate(wylgodz, 1)
+           postUpdate(wylmin, 0)
+           postUpdate(alarm_hrs, 8)
+           postUpdate(alarm_mins, 20)
+           postUpdate(alarm_time,"-")
+
+]
+end
+
+//**************************************************************************************//
+rule "Anuluj budzik"
+when
+Item alarm_set received command OFF
+then
+sendCommand(logger, "Budzik: anuluj")
+logInfo("Budzik","Alarm budzika wylaczony")
+postUpdate(alarm_time,"-")
+if (timer_alr1 != null) {
+   timer_alr1.cancel
+   timer_alr1 = null
+}
+end

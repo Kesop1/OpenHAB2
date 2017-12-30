@@ -1,3 +1,5 @@
+String		    pc_audio_output	"PC audio source"									{mqtt=">[broker:pcCMD:command:*:default]"}
+
 //
 Switch              lis_lcd             "Monitor"                                         <monitor>           (All)             {mqtt=">[broker:lis/lcd:command:off:OFF],>[broker:lis/lcd:command:on:ON],<[broker:lis/lcd/status:state:default]"}
 
@@ -49,47 +51,45 @@ String              wylczas             "%s"
 //
 Switch              ustawspanie         "Ustaw timer"                                     <bedroom>           (wylacznik)       
 
-//
-Switch              spij_pc             "PC"                                              <pc>                (wylacznik)       
 
 //
 Switch              spij_tv             "TV"                                              <tv>                (wylacznik)       
 
 //
-Number              wlgodz_praca        "Godziny [%d]"                                    <clock>             (budzik_praca)    
+Number              alarm_work_hrs        "Godziny [%d]"                                    <clock>             (budzik_praca)    
 
 //
-Number              wlmin_praca         "Minuty [%d]"                                     <clock>             (budzik_praca)    
+Number              alarm_work_mins         "Minuty [%d]"                                     <clock>             (budzik_praca)    
 
 //
-Switch              budzik1_praca       "Ustaw pobudke"                                   <bedroom>           (budzik_praca)    
+Switch              alarm_work_set       "Ustaw pobudke"                                   <bedroom>           (budzik_praca)    
 
 //
-String              wlczas_praca        "%s"                                                                         
+String              alarm_work_time      "%s"                                                                         
 //
-Switch              wolne               "Jutro wolne"                                                                        
+Switch              alarm_work_dayoff     "Jutro wolne"                                                                        
 //
-Number              radio_praca                                                         <scena>             (budzik_praca)    
+Number              alarm_work_radio                                              <scena>             (budzik_praca)    
 
 //
-Switch              pcON_praca          "Wlaczyc PC?"                                                                         
+Switch              alarm_work_PC_ON   "Wlaczyc PC?"                                                                         
 //
-Number              wlgodz              "Godziny [%d]"                                    <clock>             (budzik)          
+Number              alarm_hrs              "Godziny [%d]"                                    <clock>             (budzik)          
 
 //
-Number              wlmin               "Minuty [%d]"                                     <clock>                               
+Number              alarm_mins               "Minuty [%d]"                                     <clock>                               
 
 //
-Switch              budzik1             "Ustaw pobudke"                                   <bedroom>                             
+Switch              alarm_set             "Ustaw pobudke"                                   <bedroom>                             
 
 //
-Number              radio_budzik                                                        <scena>                               
+Number              alarm_radio                                                        <scena>                               
 
 //
-String              wlczas              "%s"                                                                                  
+String              alarm_time              "%s"                                                                                  
 
 //
-Switch              pcON                "Wlaczyc PC?"                                                                         
+Switch              alarm_PC_ON                "Wlaczyc PC?"                                                                         
 //
 Number              scena                                                               <scena>             (All)             {mqtt=">[broker:pilot/amp:command:*:default]"}
 
@@ -120,3 +120,5 @@ String															change_radio           {mqtt=">[broker:pilot/amp:command:*:
 
 //logger
 String		logger												{mqtt=">[broker:logger:command:*:default]"}
+
+DateTime	alarmTime

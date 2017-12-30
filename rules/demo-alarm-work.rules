@@ -1,0 +1,124 @@
+var Timer timer_alarm = null
+var Timer timer_radio = null
+var Timer timer_volume_and_light = null
+var Timer timer_reset = null
+
+//**************************************************************************************//
+rule "budzik praca"
+when
+Item alarm_work_set received command ON
+then
+
+var int czaswl
+czaswl = (alarm_work_hrs.state as DecimalType).intValue * 60 + (alarm_work_mins.state as DecimalType).intValue
+czaswl = czaswl.intValue
+
+//okresl ile minut jest juz tego dnia
+var int terazczas
+terazczas = now.getMinuteOfDay
+terazczas = terazczas.intValue
+
+var int alarm
+alarm = czaswl - terazczas
+
+//jesli ustawiono na dzien nastepny
+if (alarm <0){
+   alarm = alarm + 1440
+}
+
+
+//jesli timer juz isnieje to nadpisz
+if (timer_alarm != null) {
+   timer_alarm.cancel
+   timer_alarm = null
+}
+
+//update godziny na stronce
+var String alarm_work_godz = alarm_work_hrs.state.format("%02d")
+var String alarm_work_min = alarm_work_mins.state.format("%02d")
+
+var String alarm_work_czas = alarm_work_godz + ":" + alarm_work_min
+postUpdate(alarm_work_time, alarm_work_czas)
+sendCommand(logger, "Budzik praca: ustaw - " + alarm_work_czas)
+logInfo("Budzik praca","Pobudka ustawiona na " + alarm_work_czas)
+
+var int dow = 0
+dow = now.getDayOfWeek
+dow = dow.intValue
+
+//timer
+timer_alarm = createTimer(now.plusMinutes(alarm))[|
+
+	   if(dow>5 || (alarm_work_dayoff!=null &&  alarm_work_dayoff.state==ON)){
+	              sendCommand(logger, "Budzik praca: wolne")
+           	      logInfo("Budzik praca","Dzis nie ma pracy" )
+		      sendCommand(alarm_work_set, OFF)
+           	      sendCommand(alarm_work_dayoff, OFF)
+
+		      if (timer_reset != null) {
+		         timer_reset.cancel
+			 timer_reset = null
+			 }
+
+         	      timer_reset = createTimer(now.plusMinutes(2))[|
+                  		 sendCommand(alarm_work_set, ON)
+     	  	      		 ]
+		      }
+
+	   else{
+
+           sendCommand(logger, "Budzik praca: pobudka")
+           logInfo("Budzik praca","Pobudka")
+           postUpdate(scena, 2)
+
+           if(alarm_work_PC_ON.state==ON){
+		      logInfo("Budzik praca","Wlacz PC")
+//	              sendCommand(but_pc, ON)
+                      }
+
+           if (timer_radio != null) {
+	              timer_radio.cancel
+           	      timer_radio = null
+                      }
+
+           //wlacz wybrana stacje radiowa
+           timer_radio = createTimer(now.plusSeconds(8))[|
+	   	      logInfo("Budzik praca","Ustaw radio stacje: " + alarm_work_radio.state.toString)
+	              sendCommand(change_radio, alarm_work_radio.state.toString)
+                      ]
+
+           if (timer_volume_and_light != null) {
+	              timer_volume_and_light.cancel
+           	      timer_volume_and_light = null
+                      }
+
+           //wlacz lampke gdy jest ciemno i zglosnij radio
+           timer_volume_and_light = createTimer(now.plusSeconds(60))[|
+	              if(wschod.state==OFF){
+           	                 //wlacz lampke///////////sendCommand(LED, OFF)
+                      		 }
+		      sendCommand(vol_send, "5")
+                      ]
+
+           //daj update wartosci wylacznika
+	   postUpdate(wylgodz, 1)
+           postUpdate(wylmin, 0)
+}
+
+]
+end
+
+//**************************************************************************************//
+rule "Anuluj budzik praca"
+when
+Item alarm_work_set received command OFF
+then
+postUpdate(alarm_work_time, "-")
+sendCommand(logger, "Budzik praca: anuluj")
+logInfo("Budzik praca","Alarm budzika wylaczony")
+postUpdate(alarm_work_time,"-")
+if (timer_alarm != null) {
+   timer_alarm.cancel
+   timer_alarm = null
+}
+end

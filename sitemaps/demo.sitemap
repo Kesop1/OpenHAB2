@@ -33,7 +33,6 @@ Setpoint item=wylmin minValue=0 maxValue=55 step=5
 Switch item=ustawspanie
 }
 Frame label="Co wylaczyc?"{
-Switch item=spij_pc
 Switch item=spij_tv
 }
 }
@@ -42,15 +41,15 @@ Switch item=spij_tv
 ////////////////////////////////////////////////
 
 Frame label="Arbeit"{
-Text label="Praca [%s]" item= wlczas_praca icon="sun"{
+Text label="Praca [%s]" item= alarm_work_time icon="sun"{
 Frame label="Na ktora?" {
-Setpoint item=wlgodz_praca minValue=0 maxValue=23 step=1
-Setpoint item=wlmin_praca minValue=0 maxValue=50 step=10
+Setpoint item=alarm_work_hrs minValue=0 maxValue=23 step=1
+Setpoint item=alarm_work_mins minValue=0 maxValue=50 step=10
 
-Switch item=budzik1_praca
-Switch item=wolne
-Switch item=pcON_praca
-Selection item=radio_praca label="Stacja" mappings=[1="Trojka", 2="Dwojka", 3="ESKA Rock", 4="ZET Gold", 5="RMF Classic", 6="Antyradio", 7="Stacja 7", 8="Stacja 8"]
+Switch item=alarm_work_set
+Switch item=alarm_work_dayoff
+Switch item=alarm_work_PC_ON
+Selection item=alarm_work_radio label="Stacja" mappings=[1="Trojka", 2="Dwojka", 3="ESKA Rock", 4="ZET Gold", 5="RMF Classic", 6="Antyradio", 7="Stacja 7", 8="Stacja 8"]
 }
 }
 }
@@ -58,13 +57,13 @@ Selection item=radio_praca label="Stacja" mappings=[1="Trojka", 2="Dwojka", 3="E
 ///////////////////////////////////////////////
 
 Frame label="Budzik"{
-Text label="Budzik [%s]" item=wlczas icon="sun"{
+Text label="Budzik [%s]" item=alarm_time icon="sun"{
 Frame label="Na ktora?" {
-Setpoint item=wlgodz minValue=0 maxValue=23 step=1
-Setpoint item=wlmin minValue=0 maxValue=50 step=10
-Switch item=budzik1
-Switch item=pcON
-Selection item=radio_budzik label="Stacja" mappings=[1="Trojka", 2="Dwojka", 3="ESKA Rock", 4="ZET Gold", 5="RMF Classic", 6="Antyradio", 7="Stacja 7", 8="Stacja 8"]
+Setpoint item=alarm_hrs minValue=0 maxValue=23 step=1
+Setpoint item=alarm_mins minValue=0 maxValue=50 step=10
+Switch item=alarm_set
+Switch item=alarm_PC_ON
+Selection item=alarm_radio label="Stacja" mappings=[1="Trojka", 2="Dwojka", 3="ESKA Rock", 4="ZET Gold", 5="RMF Classic", 6="Antyradio", 7="Stacja 7", 8="Stacja 8"]
 }
 }
 }
@@ -85,8 +84,7 @@ Selection item=radio_stacja label="Stacja" mappings=[1="Trojka", 2="Dwojka", 3="
 /////////////////////////////////////////////
 
 Frame label="Other"{
-//Selection item=button label="Button" mappings=["UP"="up", "DN"="down", "LE"="left", "RI"="right", "1"="1", "2"="2", "3"="3", "4"="4", "R1"="r1", "R2"="r2", "L1"="l1", "L2"="l2"]
-Selection item=audiosrc label="Audio Source" mappings=[1="PC", 2="AMP"]
+Selection item=pc_audio_output mappings=["PCPC"="PC", "PCAMP"="AMP"]
 }
 
 

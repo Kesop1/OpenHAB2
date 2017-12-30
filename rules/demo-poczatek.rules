@@ -1,17 +1,18 @@
 rule "Poczatek"
+
  when
    System started
  then
      postUpdate(wylgodz, 1)
      postUpdate(wylmin, 0)
-     postUpdate(wlgodz, 8)
-     postUpdate(wlmin, 20)
+     postUpdate(alarm_hrs, 8)
+     postUpdate(alarm_mins, 20)
      postUpdate(wlgodz_praca, 7)
      postUpdate(wlmin_praca, 20)
      postUpdate(wylczas, "-")
-     postUpdate(wlczas, "-")
+     postUpdate(alarm_time, "-")
      postUpdate(wlczas_praca, "-")
      postUpdate(wolne, OFF)
-     sendCommand(radio_budzik, 1)
+     sendCommand(alarm_radio, 1)
      postUpdate(radio_praca, "ESKA Rock")
  end

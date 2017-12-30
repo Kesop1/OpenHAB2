@@ -63,7 +63,7 @@ if(scena.state==4){
 	sendCommand(pilot_amp, "TV")
 	timer_scn2 = createTimer(now.plusSeconds(2))[|
 		   sendCommand(pilot_amp, "SCENE2")
-		   sendCommand(audio_src, ON)
+		   sendCommand(pc_audio_output, "AMP")
 		  ]
 					  //sendCommand(led, ON)
 }
@@ -77,7 +77,7 @@ if(scena.state==5){
 	sendCommand(pilot_amp, "TV")
 	timer_scn2 = createTimer(now.plusSeconds(2))[|
 		   sendCommand(pilot_amp, "SCENE2")
-		  sendCommand(audio_src, ON)
+		  sendCommand(pc_audio_output, "AMP")
 		  ]
 					  //sendCommand(led, ON)
 }
@@ -127,30 +127,20 @@ else{
 }
 end
 
-
 //**********************************************************//
-rule "PC audio na AMP"
+rule "AMP audio src x3"
 when
-Item audio_src received command ON
+Item pc_audio_output received update
 then
-sendCommand(logger, "Audio: ustaw - AMP")
-sendCommand(audiosrc, 2)
-var i = 1
-while ((i=i+1) < 5) {
-      timer_scn3 = createTimer(now.plusSeconds(1))[|
-      		 sendCommand(pilot_amp, "AUDIOSRC")
-		 ]
+sendCommand(logger, "Audio output: ustaw - AMP")
+
+if(pc_audio_output.state.toString=="PCAMP"){
+	var i = 1
+	while ((i=i+1) < 5) {
+	      timer_scn3 = createTimer(now.plusSeconds(1))[|
+                       sendCommand(pilot_amp, "AUDIOSRC")
+		                        ]
+					}
+	sendCommand(logger, "Audio output: ustaw - AMP")
 }
-end
-
-//**********************************************************//
-rule "Zmien audio SRC"
-when
-Item audiosrc received update
-then
-var String src
-if(audiosrc.state==1) src="PCPC"
-else if(audiosrc.state==2) src="PCAMP"
-sendCommand(logger, "Audio: ustaw - " + src)
-sendCommand(send_audio, src)
 end
