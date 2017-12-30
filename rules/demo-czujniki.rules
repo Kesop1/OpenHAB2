@@ -1,0 +1,7 @@
+rule "Pokaz czujniki"
+when
+Time cron "0 0/10 * * * ?"
+then
+logInfo("Sensors", "Pokaz odczyty czujnikow")
+sendCommand(czuj, ON)
+end

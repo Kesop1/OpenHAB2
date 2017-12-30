@@ -1,0 +1,7 @@
+rule "Pokaz date i czas"
+when
+Time cron "0/10 * * * * ?"
+then
+logInfo("Time logging", "Pokaz date i czas")
+postUpdate(dataczas, new DateTimeType())
+end
