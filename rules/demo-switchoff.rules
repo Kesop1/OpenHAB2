@@ -1,0 +1,69 @@
+var Timer timer_wyl1 = null
+
+
+//**************************************************************************************//
+rule "wylaczanie"
+when
+Item ustawspanie received command ON
+then
+var int czaswyl
+czaswyl = (wylgodz.state as DecimalType).intValue * 60 + (wylmin.state as DecimalType).intValue
+czaswyl = czaswyl.intValue
+val DateTime czaswylaczenia = now.plusMinutes(czaswyl)
+alarmTime.postUpdate(new DateTimeType(czaswylaczenia.toString))
+
+//jesli timer juz istnieje to go nadpisz
+if (timer_wyl1 != null) {
+        timer_wyl1.cancel
+        timer_wyl1 = null
+}
+
+//wartosc inicjalna dla update'u
+postUpdate(wylczas, czaswyl)
+
+sendCommand(logger, "Wylaczanie: ustaw - " + czaswyl)
+logInfo("Wylaczanie","Wylaczanie ustawione na za " + czaswyl + " minut")
+
+timer_wyl1 = createTimer(now.plusMinutes(czaswyl))[|
+	   sendCommand(logger, "Wylaczanie: teraz")
+	   logInfo("Wylaczanie","    Wylaczanie teraz!!!!!")
+	   //wyslij komende OFF dla nadajnika IR
+//	   sendCommand(scena, 1)
+
+	   if (spij_tv.state==ON){
+           sendCommand(but_tv, OFF)
+	   }
+
+	   sendCommand(ustawspanie, OFF)
+]
+end
+
+//**************************************************************************************//
+rule "zeruj wylaczanie"
+when
+Item ustawspanie received command OFF
+then
+sendCommand(logger, "Wylaczanie: anuluj")
+if (timer_wyl1 != null) {
+        timer_wyl1.cancel
+        timer_wyl1 = null
+}
+postUpdate(wylczas, "-")
+end
+
+
+//**************************************************************************************//
+rule "Pokaz alarmTime co minute"
+when
+Time cron "0 0/1 * * * ?"
+then
+logInfo("Wylaczanie", "Pokaz alarmTime")
+
+var DateTime alarmCzas = new DateTime((alarmTime.state as DateTimeType).calendar.timeInMillis)
+
+if(alarmCzas.isAfter(now)){
+        if(wylczas.state!="-"){
+	        postUpdate(wylczas, alarmCzas.getMinuteOfDay-now.getMinuteOfDay)
+        }
+}
+end
