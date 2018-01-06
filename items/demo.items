@@ -19,7 +19,7 @@ Switch              lis_etc             "Listwa 5"                              
 Switch              but_pc              "Komputer"                                        <pc>                (All)             {mqtt=">[broker:pcCMD:command:off:PCOFF],>[broker:pcCMD:command:on:PCON],<[broker:pcCMD/status:state:default]"}
 
 //
-Switch              but_tv              "TV"                                              <tv>                (All)             {mqtt=">[broker:pilot/amp:command:off:TV],>[broker:pilot/amp:command:on:TV],<[broker:lis/tv/status:state:default]"}
+Switch              but_tv              "TV"                                              <tv>                (All)             {mqtt=">[broker:pilot/tv:command:off:TV],>[broker:pilot/tv:command:on:TV],<[broker:pilot/tv/status:state:default]"}
 
 //
 Number              volume              
@@ -122,3 +122,5 @@ String															change_radio           {mqtt=">[broker:pilot/amp:command:*:
 String		logger												{mqtt=">[broker:logger:command:*:default]"}
 
 DateTime	alarmTime
+
+Switch              test_btn              "test"                                              <tv>                (All)             {mqtt=">[broker:pilot/amp:command:off:0x5EA158A7],>[broker:pilot/amp:command:on:0x5EA1D827],<[broker:lis/tv/status:state:default]"}

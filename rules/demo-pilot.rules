@@ -54,6 +54,7 @@ else if(pilot_rcv.state==0){
 logInfo("Pilot","Pilot 0")
      postUpdate(wylgodz, 1)
      postUpdate(wylmin, 0)
+     sendCommand(spij_tv, OFF)
      sendCommand(ustawspanie, ON)
 }
 //czyli SCENE4 wcisniete na pilocie, jesli jest wylaczony AMP, to wlaczy listwe i subwoofer
@@ -61,7 +62,7 @@ else if(pilot_rcv.state==10){
 logInfo("Pilot","Pilot 10")
 sendCommand(amp, ON)
 timer_amp2 = createTimer(now.plusSeconds(3))[|
-sendCommand(pilot_amp, "SCENE4")
+sendCommand(pilot_amp, transform("MAP","pilot_amp.map","SCENE4"))
 ]
 
 } 

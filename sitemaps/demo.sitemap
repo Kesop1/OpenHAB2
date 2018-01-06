@@ -9,6 +9,7 @@ Switch item=lis_sub
 Switch item=lis_etc
 Switch item=but_pc
 Switch item=but_tv
+Switch item=test_btn
 }
 
 //////////////////////////////////////////////////

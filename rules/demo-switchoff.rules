@@ -23,18 +23,21 @@ postUpdate(wylczas, czaswyl)
 
 sendCommand(logger, "Wylaczanie: ustaw - " + czaswyl)
 logInfo("Wylaczanie","Wylaczanie ustawione na za " + czaswyl + " minut")
+if(now.getMinuteOfDay >= 1320)
+	sendCommand(pilot_amp, transform("MAP","pilot_amp.map","NIGHT"))
 
 timer_wyl1 = createTimer(now.plusMinutes(czaswyl))[|
 	   sendCommand(logger, "Wylaczanie: teraz")
 	   logInfo("Wylaczanie","    Wylaczanie teraz!!!!!")
-	   //wyslij komende OFF dla nadajnika IR
-//	   sendCommand(scena, 1)
+
+	   sendCommand(scena, 1)
 
 	   if (spij_tv.state==ON){
            sendCommand(but_tv, OFF)
 	   }
 
 	   sendCommand(ustawspanie, OFF)
+	   sendCommand(spij_tv, OFF)
 ]
 end
 
@@ -57,13 +60,12 @@ rule "Pokaz alarmTime co minute"
 when
 Time cron "0 0/1 * * * ?"
 then
-logInfo("Wylaczanie", "Pokaz alarmTime")
+if(timer_wyl1 != null){
+ logInfo("Wylaczanie", "Pokaz alarmTime")
+ DateTime alarmCzas = new DateTime((alarmTime.state as DateTimeType).calendar.timeInMillis)
 
-var DateTime alarmCzas = new DateTime((alarmTime.state as DateTimeType).calendar.timeInMillis)
-
-if(alarmCzas.isAfter(now)){
-        if(wylczas.state!="-"){
+	if(alarmCzas.isAfter(now)){
 	        postUpdate(wylczas, alarmCzas.getMinuteOfDay-now.getMinuteOfDay)
-        }
+	}
 }
 end

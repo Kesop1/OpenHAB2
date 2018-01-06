@@ -43,7 +43,7 @@ if(scena.state==2){
 	sendCommand(lis_speak, OFF)
 	sendCommand(amp, ON)
 	timer_scn1 = createTimer(now.plusSeconds(5))[|
-		   sendCommand(pilot_amp, "SCENE4")
+		   sendCommand(pilot_amp, transform("MAP","pilot_amp.map","SCENE4"))
 		   ]
 }
 
@@ -60,10 +60,10 @@ if(scena.state==4){
 	sendCommand(amp, ON)
 	sendCommand(lis_lcd, OFF)
 	sendCommand(lis_speak, OFF)
-	sendCommand(pilot_amp, "TV")
+	sendCommand(but_tv, ON)
 	timer_scn2 = createTimer(now.plusSeconds(2))[|
-		   sendCommand(pilot_amp, "SCENE2")
-		   sendCommand(pc_audio_output, "AMP")
+		   sendCommand(pilot_amp, transform("MAP","pilot_amp.map","SCENE2"))
+		   sendCommand(pc_audio_output, "PCAMP")
 		  ]
 					  //sendCommand(led, ON)
 }
@@ -71,13 +71,13 @@ if(scena.state==4){
 //scena 5=film,
 if(scena.state==5){
 	logInfo("Scena","Ustawiono scene nr 5 - film")
-	sendCommand(amp, ON)
+	sendCommand(pilot_amp, transform("MAP","pilot_amp.map","ON"))
 	sendCommand(lis_lcd, OFF)
 	sendCommand(lis_speak, OFF)
-	sendCommand(pilot_amp, "TV")
+	sendCommand(but_tv, ON)
 	timer_scn2 = createTimer(now.plusSeconds(2))[|
-		   sendCommand(pilot_amp, "SCENE2")
-		  sendCommand(pc_audio_output, "AMP")
+		   sendCommand(pilot_amp, transform("MAP","pilot_amp.map","SCENE2"))
+		   sendCommand(pc_audio_output, "PCAMP")
 		  ]
 					  //sendCommand(led, ON)
 }
@@ -85,7 +85,7 @@ if(scena.state==5){
 //scena 6=ksiazka,
 if(scena.state==6){
 	logInfo("Scena","Ustawiono scene nr 6 - ksiazka")
-	sendCommand(amp, ON)
+	sendCommand(pilot_amp, transform("MAP","pilot_amp.map","ON"))
 	sendCommand(lis_lcd, OFF)
 	sendCommand(lis_speak, OFF)
 	//sendCommand(led, ON)
@@ -94,12 +94,12 @@ if(scena.state==6){
 //scena 7=TV,
 if(scena.state==7){
 	logInfo("Scena","Ustawiono scene nr 7 - TV")
-	sendCommand(amp, ON)
+	sendCommand(pilot_amp, transform("MAP","pilot_amp.map","ON"))
 	sendCommand(lis_lcd, OFF)
 	sendCommand(lis_speak, OFF)
-	sendCommand(pilot_amp, "TV")
+	sendCommand(but_tv, ON)
 	timer_scn3 = createTimer(now.plusSeconds(2))[|
-		   sendCommand(pilot_amp, "SCENE3")
+		   sendCommand(pilot_amp, transform("MAP","pilot_amp.map","SCENE3"))
 		   ]
 		   //sendCommand(led, ON)
 }
@@ -112,17 +112,17 @@ when
 Item amp received update
 then
 if(amp.state==OFF){
-	sendCommand(pilot_amp,"OFF")
+	sendCommand(pilot_amp, transform("MAP","pilot_amp.map","OFF"))
 	timer_amp1 = createTimer(now.plusSeconds(1))[|
-		   sendCommand(lis_amp, OFF)
-		   			sendCommand(lis_sub, OFF)
+		sendCommand(lis_amp, OFF)
+		sendCommand(lis_sub, OFF)
 					]
 }
 else{
 	sendCommand(lis_amp, ON)
 	sendCommand(lis_sub, ON)
 	timer_amp2 = createTimer(now.plusSeconds(3))[|
-		   sendCommand(pilot_amp, "ON")
+		   sendCommand(pilot_amp, transform("MAP","pilot_amp.map","ON"))
 		   ]
 }
 end
@@ -138,9 +138,9 @@ if(pc_audio_output.state.toString=="PCAMP"){
 	var i = 1
 	while ((i=i+1) < 5) {
 	      timer_scn3 = createTimer(now.plusSeconds(1))[|
-                       sendCommand(pilot_amp, "AUDIOSRC")
-		                        ]
-					}
+	      		 sendCommand(pilot_amp, transform("MAP","pilot_amp.map","AUDIO_SRC"))
+              ]
+	}
 	sendCommand(logger, "Audio output: ustaw - AMP")
 }
 end
